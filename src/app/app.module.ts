@@ -8,12 +8,16 @@ import { ProfileComponent } from './profile/profile.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LayoutModule } from './layout/layout.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TodoListComponent } from './todo-list/todo-list.component';
+import { QuoteComponent } from './quote/quote.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TodoComponent,
-    ProfileComponent
+    ProfileComponent,
+    TodoListComponent,
+    QuoteComponent
   ],
   imports: [
     BrowserModule,
