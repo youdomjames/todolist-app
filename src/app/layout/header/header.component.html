@@ -2,10 +2,17 @@
   <div class="ps-2">
     <img src="../../../assets/svg/logo.svg" alt="logo">
   </div>
-  <div class="btn bg-transparent d-inline-flex">
+  <div ngbDropdown class="btn bg-transparent d-inline-flex" #menu="ngbDropdown">
     <img src="../../../assets/svg/icon-person.svg" alt="">
-    <h5 class="pt-3 ps-3 ">James Y. <span class="ms-3 translate-middle badge rounded-pill bg-danger">2</span></h5>
+    <h5 class="pt-3 ps-3 " id="dropdownBasic1" (click)="menu.open()">James Y. <span class="ms-3 translate-middle badge rounded-pill bg-danger">2</span></h5>
+    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+      <button ngbDropdownItem>Profile</button>
+      <button ngbDropdownItem>Friends/Colleagues</button>
+      <button ngbDropdownItem>Notifications</button>
+      <button ngbDropdownItem class="fw-bold">Log out</button>
+    </div>
   </div>
+
   <div class="pe-2">
     <weather></weather>
   </div>
