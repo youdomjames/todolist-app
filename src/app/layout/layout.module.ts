@@ -8,6 +8,7 @@ import { FooterComponent } from './footer/footer.component';
 import { LayoutComponent } from './layout.component';
 import { WeatherComponent } from '../weather/weather.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   imports: [
     CommonModule,
     FontAwesomeModule,
-    LayoutRoutingModule
+    LayoutRoutingModule,
+    NgbDropdownModule
   ],
   exports: [
     LayoutComponent
