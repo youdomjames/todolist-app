@@ -9,6 +9,9 @@ import { LayoutComponent } from './layout.component';
 import { WeatherComponent } from '../weather/weather.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { QuoteComponent } from '../quote/quote.component';
+import { TodoComponent } from '../todo/todo.component';
+import { TodoListComponent } from '../todo-list/todo-list.component';
 
 
 @NgModule({
@@ -17,7 +20,10 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
     MainComponent,
     FooterComponent,
     WeatherComponent,
-    LayoutComponent
+    LayoutComponent,
+    QuoteComponent,
+    TodoComponent,
+    TodoListComponent
   ],
   imports: [
     CommonModule,
