@@ -1,15 +1,45 @@
-<div class="vstack gap-3 list">
-  <div class="">
-    <span class="fw-light day">Today</span>
-    <br>
-    <div class="hstack">
-      <input class="form-check-input mt-2" type="checkbox" value="" id="flexCheckDefault">
-      <span class="p-2 ms-3 todo-list-item">Meeting with Charles at 4 : 30 p.m</span>
-      <span class="badge text-bg-danger rounded-pill w-25  d-flex align-items-center justify-content-center">Important</span>
-      <span class="d-flex align-items-center pe-2"><img src="../../assets/svg/icon-edit.svg" alt=""></span>
-      <span class="d-flex align-items-center"><img src="../../assets/svg/icon-delete.svg" alt=""></span>
+<div class="vstack list">
+  <span class="fw-light day">Today</span>
+  <ng-container [ngTemplateOutlet]="table" [ngTemplateOutletContext]="{todos: todos.get('today')}"></ng-container>
+  <span class="fw-light day">Tomorrow</span>
+  <ng-container [ngTemplateOutlet]="table" [ngTemplateOutletContext]="{todos: todos.get('tomorrow')}"></ng-container>
+
+  <ng-container *ngIf="loadMore">
+    <div *ngFor="let key of todos.keys()">
+      <div *ngIf="key != 'today' && key != 'tomorrow'">
+        <span class="fw-light day">{{key}}</span>
+        <ng-container [ngTemplateOutlet]="table" [ngTemplateOutletContext]="{todos: todos.get(key)}"></ng-container>
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="d-flex justify-content-center align-items-center mt-5">
+    <div *ngIf="!loadMore" class="shadow-lg p-2 bg-body-tertiary rounded btn w-75" (click)="loadMore = true">Load More
+    </div>
+    <div *ngIf="loadMore" class="shadow-lg p-2 bg-body-tertiary rounded btn w-75" (click)="loadMore = false">Reduce
     </div>
   </div>
-  <div>tomorrow</div>
 </div>
-<!-- todo: use template ref -->
+
+<ng-template #table let-todos="todos">
+  <table>
+    <tr *ngFor="let todo of todos">
+      <td>
+        <input class="form-check-input mt-2 me-3 col-1" type="checkbox" value="" id="flexCheckDefault" />
+      </td>
+      <td class="w-75">
+        <span class="todo-list-item">{{todo.title}} at <span class="fw-bold">{{todo.time | date:
+            'shortTime'}}</span></span>
+      </td>
+      <td>
+        <span class="badge rounded-pill d-flex justify-content-center text-capitalize me-3" [ngClass]="getBadgeClass(todo.priority)">{{todo.priority}}</span>
+      </td>
+      <td>
+        <div class="d-flex">
+          <span class="d-flex align-items-center"><img class="btn" src="../../assets/svg/icon-edit.svg" alt="edit" (click)="edit()"></span>
+          <span class="d-flex align-items-center"><img class="btn" src="../../assets/svg/icon-delete.svg" alt="delete" (click)="delete()"></span>
+        </div>
+      </td>
+    </tr>
+  </table>
+</ng-template>
