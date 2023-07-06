@@ -1,0 +1,50 @@
+<div class="vstack list">
+  <ng-container *ngIf="todos.get('today')?.length">
+    <span class="fw-light day">Today</span>
+  <ng-container [ngTemplateOutlet]="table" [ngTemplateOutletContext]="{todos: todos.get('today')}"></ng-container>
+  </ng-container>
+  <ng-container *ngIf="todos.get('tomorrow')?.length">
+    <span class="fw-light day">Tomorrow</span>
+    <ng-container [ngTemplateOutlet]="table" [ngTemplateOutletContext]="{todos: todos.get('tomorrow')}"></ng-container>
+  </ng-container>
+
+
+  <ng-container *ngIf="loadMore">
+    <ng-container *ngFor="let key of todos.keys()">
+      <ng-container *ngIf="key != 'today' && key != 'tomorrow' && todos.get(key)?.length">
+        <span class="fw-light day">{{key}}</span>
+        <ng-container [ngTemplateOutlet]="table" [ngTemplateOutletContext]="{todos: todos.get(key)}"></ng-container>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+
+  <div class="d-flex justify-content-center align-items-center mt-4">
+    <div *ngIf="!loadMore" class="shadow-lg p-2 bg-body-tertiary rounded btn w-75" (click)="loadMore = true">Load More
+    </div>
+    <div *ngIf="loadMore" class="shadow-lg p-2 bg-body-tertiary rounded btn w-75" (click)="loadMore = false">Reduce
+    </div>
+  </div>
+</div>
+
+<ng-template #table let-todos="todos">
+  <table>
+    <tr *ngFor="let todo of todos">
+      <td>
+        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+      </td>
+      <td class="title pe-1">
+        <span class="todo-list-item">{{todo.title}} at <span class="fw-bold">{{todo.time | date:
+            'shortTime'}}</span></span>
+      </td>
+      <td>
+        <span class="badge rounded-pill d-flex justify-content-center text-capitalize" [ngClass]="getBadgeClass(todo.priority)">{{todo.priority}}</span>
+      </td>
+      <td>
+        <div class="d-flex">
+          <span><img class="btn" src="../../assets/svg/icon-edit.svg" alt="edit" (click)="edit()"></span>
+          <span><img class="btn" src="../../assets/svg/icon-delete.svg" alt="delete" (click)="delete(todo)"></span>
+        </div>
+      </td>
+    </tr>
+  </table>
+</ng-template>

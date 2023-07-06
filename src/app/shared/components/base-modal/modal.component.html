@@ -1,0 +1,10 @@
+<div class="modal-container">
+  <div class="d-flex justify-content-end mt-2 me-2" tabindex="-1">
+    <i class="btn btn-outline-secondary bi bi-x-diamond-fill" (click)="dismiss()"></i>
+  </div>
+    <ng-content select="[body]"></ng-content>
+  <div class="modal-footer hstack gap-3 d-flex justify-content-start align-content-center">
+    <ng-content select="[positive-action]"></ng-content>
+    <ng-content select="[negative-action]"></ng-content>
+  </div>
+</div>
