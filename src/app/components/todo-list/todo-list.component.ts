@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalService } from 'src/app/shared/components/base-modal/modal.service';
 import { ConfirmationComponent } from '../modals/confirmation/confirmation.component';
-import { map, take, tap } from 'rxjs';
+import { take, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { ModalContent } from 'src/app/shared/models/modal-conent';
+import { ToastService } from 'src/app/shared/service/toast.service';
+import { Todo } from 'src/app/shared/models/todo';
+
 
 @Component({
   selector: 'todo-list',
@@ -11,53 +14,57 @@ import { ModalContent } from 'src/app/shared/models/modal-conent';
   styleUrls: ['./todo-list.component.scss']
 })
 export class TodoListComponent implements OnInit {
-  date= new Date();
-  loadMore:boolean = false;
-  todos : Map<string, Array<{ id: string; title: string; time: number; priority: string; }>>
+  date = new Date();
+  loadMore: boolean = false;
+  todos: Map<string, Array<Todo>> = new Map<string, Array<Todo>>();
 
-  constructor(private modalService: ModalService, private datePipe: DatePipe){
-    this.todos = new Map<string, Array<{ id: string; title: string; time: number; priority: string; }>>();
+  constructor(private modalService: ModalService, private datePipe: DatePipe, private toastService: ToastService) {
   }
 
   ngOnInit(): void {
     this.setValues();
   }
 
-  edit(){
-    
+  edit(todo: Todo) {
+    this.modalService.openAddEditTodoModal(todo)
   }
 
-  delete(todo: any){
+  delete(todo: any) {
     const modalContent = {
       title: 'Delete Confirmation',
-      message: 'Do you want to delete this task?',
+      message: 'Do really you want to delete this task?',
       description: todo.title + ' at ' + this.datePipe.transform(todo.time, 'shortTime'),
       positiveAction: 'Yes',
       negativeAction: 'No'
     } as ModalContent;
 
-    const modalRef = this.modalService.open(ConfirmationComponent, {backdrop: false, centered: true})
+    const modalRef = this.modalService.open(ConfirmationComponent, { backdrop: false, centered: true })
     modalRef.componentInstance.modalContent = modalContent;
     modalRef.componentInstance.positiveAction.pipe(
       take(1),
-      tap(()=>{
-      for(let todos of this.todos.values()){
-        const todoIndex = todos.indexOf(todo, 0)
-          if(todoIndex > -1){
+      tap(() => {
+        for (let todos of this.todos.values()) {
+          const todoIndex = todos.indexOf(todo, 0)
+          if (todoIndex > -1) {
             todos.splice(todoIndex, 1)
+            this.toastService.showSuccess('Task successfully deleted')
           }
-       }
-    })).subscribe()
+        }
+      })).subscribe()
+
     modalRef.componentInstance.negativeAction.pipe(
       take(1),
-      tap(()=> modalRef.close())
+      tap(() => {
+        modalRef.close()
+        this.toastService.showWarning('Dismissed')
+      })
     ).subscribe()
 
   }
 
-  getBadgeClass(priority: string){
+  getBadgeClass(priority: string) {
     let badgeClass = '';
-    switch(priority){
+    switch (priority) {
       case 'important': {
         badgeClass = 'bg-danger';
         break;
@@ -81,41 +88,50 @@ export class TodoListComponent implements OnInit {
   }
 
   setValues(): void {
+    const now = new Date();
+    const date = {year: now.getFullYear(), month: now.getMonth(), day: now.getDay()}
+    // const ngbTime = {hour: now.getHours(), minute: now.getMinutes()} as NgbTimeStruct
     this.todos.set('today', [
       {
         id: '1',
         title: 'Metting with Mark Lorem ipsum dolor, sit amet consectetur adipisicing elit.',
-        time: this.date.getTime(),
+        date: date,
+        time: { hour: now.getHours(), minute: now.getMinutes() + 15 },
         priority: 'important'
       },
       {
         id: '2',
         title: 'Metting with Mark Tempore alias sunt vitae sequi tempora voluptas ipsum inventore.',
-        time: (this.date.getDate()+1000),
+        date: date,
+        time: { hour: now.getHours() + 1, minute: now.getMinutes() },
         priority: 'relax'
       },
       {
         id: '3',
         title: 'Metting with Mark Lorem ipsum dolor, sit amet consectetur adipisicing elit.',
-        time: (this.date.getDate()+800000),
+        date: date,
+        time: { hour: now.getHours() + 1, minute: (now.getMinutes() > 45 ? now.getMinutes() : now.getMinutes() + 5) },
         priority: 'interesting'
       },
       {
         id: '4',
         title: 'Metting with Mark Tempore alias sunt vitae sequi tempora voluptas ipsum inventore.',
-        time: (this.date.getDate()+10000000),
+        date: date,
+        time: { hour: now.getHours() + 1, minute: (now.getMinutes() > 45 ? now.getMinutes() : now.getMinutes() + 10)},
         priority: 'important'
       },
       {
         id: '5',
         title: 'Metting with Mark Lorem ipsum dolor, sit amet consectetur adipisicing elit.',
-        time: (this.date.getDate()+100000000),
+        date: date,
+        time: { hour: now.getHours() + 2, minute: (now.getMinutes() > 45 ? now.getMinutes() : now.getMinutes() + 15) },
         priority: 'interesting'
       },
       {
         id: '6',
         title: 'Metting with Mark Tempore alias sunt vitae sequi tempora voluptas ipsum inventore.',
-        time: (this.date.getDate()+190000000),
+        date: date,
+        time: { hour: now.getHours() + 3, minute: now.getMinutes() },
         priority: 'chill'
       }
     ])
@@ -124,28 +140,29 @@ export class TodoListComponent implements OnInit {
       {
         id: '7',
         title: 'Metting with Mark ex perferendis sapiente tenetur nisi reprehenderit excepturi',
-        time: (this.date.getDate()+2000),
+        date: { year: date.year, month: date.month, day: (date.day+3) },
+        time: { hour: now.getHours() + 1, minute: (now.getMinutes() > 45 ? now.getMinutes() : now.getMinutes() + 5) },
         priority: 'relax'
       },
       {
         id: '8',
         title: 'Metting with Mark aliquid deserunt sint dolorem eum reiciendis.',
-        time: (this.date.getDate()+5000000),
+        time: { hour: now.getHours() + 3, minute: now.getMinutes() },
         priority: 'important'
       }
     ],)
-
+    const date1 = { year: now.getFullYear(), month: now.getMonth(), day: now.getDate()+4 }
     this.todos.set('13th January', [
       {
         id: '9',
         title: 'Metting with Mark ex perferendis sapiente tenetur nisi reprehenderit excepturi',
-        time: (this.date.getDate()+2000),
+        time: { hour: now.getHours(), minute: now.getMinutes() },
         priority: 'chill'
       },
       {
         id: '10',
         title: 'Metting with Mark aliquid deserunt sint dolorem eum reiciendis.',
-        time: (this.date.getDate()+5000000),
+        time: { hour: now.getHours() + 1, minute: now.getMinutes() },
         priority: 'important'
       }
     ])
@@ -153,13 +170,13 @@ export class TodoListComponent implements OnInit {
       {
         id: '11',
         title: 'Metting with Mark ex perferendis sapiente tenetur nisi reprehenderit excepturi',
-        time: (this.date.getDate()+2000),
+        time: { hour: now.getHours() + 3, minute:  (now.getMinutes() > 45 ? now.getMinutes() : now.getMinutes() + 10) },
         priority: 'relax'
       },
       {
         id: '12',
         title: 'Metting with Mark aliquid deserunt sint dolorem eum reiciendis.',
-        time: (this.date.getDate()+5000000),
+        time: { hour: now.getHours() + 5, minute: now.getMinutes() },
         priority: 'interesting'
       }
     ])

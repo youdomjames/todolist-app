@@ -1,0 +1,17 @@
+.btn{
+  border-radius: 1rem;
+}
+
+select{
+  cursor: pointer;
+}
+
+option{
+  :hover{
+    cursor: pointer;
+  }
+
+  ::after{
+    cursor: pointer;
+  }
+}

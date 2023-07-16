@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastService } from '../../service/toast.service';
 
 @Component({
   selector: 'modal',

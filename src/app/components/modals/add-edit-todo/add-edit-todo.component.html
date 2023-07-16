@@ -1,1 +1,73 @@
-<p>add-edit-todo works!</p>
+<modal>
+  <h5 header>
+    <ng-container *ngIf="todo">Edit</ng-container>
+    <ng-container *ngIf="!todo">Add</ng-container>
+  </h5>
+  <div body class="container">
+    <form class="row g-3 mb-3 d-flex justify-content-center align-items-center" [formGroup]="todoForm">
+      <div class="row g-3 align-items-center w-100">
+        <div class="col-auto ms-4">
+          <label for="title" class="col-form-label fs-5">Title</label>
+        </div>
+        <div class="col-auto col-10">
+          <input type="text" id="title" class="form-control form-control-lg" aria-labelledby="passwordHelpInline" formControlName="title"/>
+        </div>
+      </div>
+
+      <div class="hstack gap-3 w-75">
+        <div class="p-2">
+          <label for="date" class="col-form-label fs-5">Date</label>
+        </div>
+        <div class="input-group">
+          <input class="form-control" placeholder="yyyy-mm-dd" name="dp" id="date" ngbDatepicker #d="ngbDatepicker" formControlName="date"/>
+          <button class="btn btn-outline-secondary bi bi-calendar3" (click)="d.toggle()" type="button"></button>
+        </div>
+        <div class="p-2">
+          <label for="date" class="col-form-label fs-5">Time</label>
+        </div>
+        <div class="p-2">
+          <ngb-timepicker [(ngModel)]="time" formControlName="time" [size]="'small'" [meridian]='true'></ngb-timepicker>
+        </div>
+      </div>
+
+      <div class="row ms-5 pt-2">
+        <div class="hstack col">
+          <div>
+            <label for="title" class="col-form-label fs-5 me-2">With</label>
+          </div>
+            <div class="input-group">
+              <input type="text" class="form-control p-2" placeholder="Enter a name" aria-label="Enter a name" aria-describedby="exit">
+              <i class="btn btn-outline-secondary bi bi-person-add" (click)="addAttendant=true">
+              </i>
+            </div>
+        </div>
+
+        <div class="row mt-1 col">
+          <div class="col-auto col-form-label fs-5">
+            <label for="priority-select">Priority</label>
+          </div>
+          <div class="col-auto col-7">
+            <select class="form-select form-select-lg w-100" id="priority-select" aria-label="Default select example" formControlName="priority">
+              <option  class="text-success">Chill</option>
+              <option value="1" class="text-danger">Important</option>
+              <option value="2" class="text-primary">Relax</option>
+              <option value="3" class="text-warning">Interesting</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div clas >
+
+      </div>
+
+      <div class="ms-5">
+        <button class="btn btn-outline-secondary m-3" [disabled]="test" (click)="test = true">Add<span *ngIf="test == true">ed</span> to Calendar <i *ngIf="test == true" class="bi bi-check-circle-fill text-success"></i></button>
+      </div>
+
+
+    </form>
+  </div>
+  <button type="submit" class="btn btn-primary" positive-action (click)="submit()">Submit</button>
+  <button type="submit" class="btn btn-danger float-end" positive-action>Cancel</button>
+</modal>

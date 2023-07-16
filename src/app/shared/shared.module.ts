@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalComponent } from './components/base-modal/modal.component';
+import { TimePipe } from './pipe/time.pipe';
 
 
 
