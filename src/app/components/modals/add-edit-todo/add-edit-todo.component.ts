@@ -1,7 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { take, tap } from 'rxjs';
 import { ModalComponent } from 'src/app/shared/components/base-modal/modal.component';
-import { Todo } from 'src/app/shared/models/todo';
+import { ModalService } from 'src/app/shared/components/base-modal/modal.service';
+import { ModalContent } from 'src/app/shared/models/modal-content';
+import { Person, Todo } from 'src/app/shared/models/todo';
+import { ConfirmationComponent } from '../confirmation/confirmation.component';
+import { ToastService } from 'src/app/shared/service/toast.service';
 
 @Component({
   selector: 'app-add-edit-todo',
@@ -15,9 +21,15 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
   addAttendant: boolean= false;
   test:boolean = false;
   todoForm!: FormGroup;
+  attendance: Array<Person> | undefined;
+
+  constructor(override activeModal: NgbActiveModal, private modalService: ModalService, private toastService: ToastService){
+    super(activeModal)
+  }
 
   ngOnInit(): void {
     this.time = this.todo?.time;
+    this.attendance = this.todo?.attendance;
     this.todoForm = new FormGroup({
       title: new FormControl(this.todo?.title),
       date: new FormControl(this.todo?.date),
@@ -26,10 +38,48 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
       priority: new FormControl(this.todo?.priority),
       isSentToCalendar: new FormControl(this.todo?.isSentToCalendar)
     })
+    console.log(this.todoForm.controls["attendance"].value);
   }
 
   submit(){
     console.log(this.todoForm);
-
   }
+
+  deleteAttendant(id: string){
+    
+    let foundAttendant = this.attendance?.find((attendant)=>attendant.id === id);
+    
+
+    const modalContent = {
+      title: 'Delete Confirmation',
+      message: 'Do really you want to delete this Attendant?',
+      description: `${foundAttendant?.firstName} ${foundAttendant?.lastName}`,
+      positiveAction: 'Yes',
+      negativeAction: 'No'
+    } as ModalContent;
+
+    const modalRef = this.modalService.open(ConfirmationComponent, { backdrop: false, centered: true })
+    modalRef.componentInstance.modalContent = modalContent;
+    modalRef.componentInstance.positiveAction.pipe(
+      take(1),
+      tap(() => {
+        const index = this.attendance?.findIndex((attendant)=> attendant.id == id);
+        if(index && index > 0){
+          this.attendance?.splice(index, 1);
+          this.todoForm.controls["attendance"].setValue(this.attendance);
+          this.toastService.showSuccess(`Attendant ${foundAttendant?.firstName} ${foundAttendant?.lastName} successfully deleted`)
+        }else
+          this.toastService.showWarning('Attendant not Deleted')
+      })).subscribe()
+
+    modalRef.componentInstance.negativeAction.pipe(
+      take(1),
+      tap(() => {
+        modalRef.close()
+        this.toastService.showWarning('Dismissed')
+      })
+    ).subscribe()
+  }
+
+
 }

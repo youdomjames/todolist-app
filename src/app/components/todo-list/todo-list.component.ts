@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ModalService } from 'src/app/shared/components/base-modal/modal.service';
 import { ConfirmationComponent } from '../modals/confirmation/confirmation.component';
 import { take, tap } from 'rxjs';
-import { DatePipe } from '@angular/common';
-import { ModalContent } from 'src/app/shared/models/modal-conent';
+import { ModalContent } from 'src/app/shared/models/modal-content';
 import { ToastService } from 'src/app/shared/service/toast.service';
-import { Todo } from 'src/app/shared/models/todo';
+import { Time, Todo } from 'src/app/shared/models/todo';
+import { TimePipe } from 'src/app/shared/pipe/time.pipe';
 
 
 @Component({
@@ -18,7 +18,7 @@ export class TodoListComponent implements OnInit {
   loadMore: boolean = false;
   todos: Map<string, Array<Todo>> = new Map<string, Array<Todo>>();
 
-  constructor(private modalService: ModalService, private datePipe: DatePipe, private toastService: ToastService) {
+  constructor(private modalService: ModalService, private timePipe: TimePipe, private toastService: ToastService) {
   }
 
   ngOnInit(): void {
@@ -29,11 +29,11 @@ export class TodoListComponent implements OnInit {
     this.modalService.openAddEditTodoModal(todo)
   }
 
-  delete(todo: any) {
+  delete(todo: Todo) {
     const modalContent = {
       title: 'Delete Confirmation',
       message: 'Do really you want to delete this task?',
-      description: todo.title + ' at ' + this.datePipe.transform(todo.time, 'shortTime'),
+      description: todo.title + ' at ' + this.timePipe.transform(todo.time as Time),
       positiveAction: 'Yes',
       negativeAction: 'No'
     } as ModalContent;
@@ -87,6 +87,11 @@ export class TodoListComponent implements OnInit {
     return badgeClass;
   }
 
+  check(todo: Todo){
+    console.log(todo);
+    
+  }
+
   setValues(): void {
     const now = new Date();
     const date = {year: now.getFullYear(), month: now.getMonth(), day: now.getDay()}
@@ -97,42 +102,51 @@ export class TodoListComponent implements OnInit {
         title: 'Metting with Mark Lorem ipsum dolor, sit amet consectetur adipisicing elit.',
         date: date,
         time: { hour: now.getHours(), minute: now.getMinutes() + 15 },
-        priority: 'important'
+        attendance: [{id: '1', firstName: 'James', lastName: 'Youdom'}, {id: '2', firstName: 'Mike', lastName: 'Jake'}, {id: '3', firstName: 'James', lastName: 'Youdom'}, {id: '4', firstName: 'Mike', lastName: 'Jake'}, 
+        {id: '5', firstName: 'Mike', lastName: 'Jake'}, {id: '6', firstName: 'James', lastName: 'Youdom'}],
+        priority: 'important',
+        isSentToCalendar: true,
+        isCompleted: true
       },
       {
         id: '2',
         title: 'Metting with Mark Tempore alias sunt vitae sequi tempora voluptas ipsum inventore.',
         date: date,
         time: { hour: now.getHours() + 1, minute: now.getMinutes() },
-        priority: 'relax'
+        priority: 'relax',
+        isCompleted: false
       },
       {
         id: '3',
         title: 'Metting with Mark Lorem ipsum dolor, sit amet consectetur adipisicing elit.',
         date: date,
         time: { hour: now.getHours() + 1, minute: (now.getMinutes() > 45 ? now.getMinutes() : now.getMinutes() + 5) },
-        priority: 'interesting'
+        priority: 'interesting',
+        isCompleted: false
       },
       {
         id: '4',
         title: 'Metting with Mark Tempore alias sunt vitae sequi tempora voluptas ipsum inventore.',
         date: date,
         time: { hour: now.getHours() + 1, minute: (now.getMinutes() > 45 ? now.getMinutes() : now.getMinutes() + 10)},
-        priority: 'important'
+        priority: 'important',
+        isCompleted: true
       },
       {
         id: '5',
         title: 'Metting with Mark Lorem ipsum dolor, sit amet consectetur adipisicing elit.',
         date: date,
         time: { hour: now.getHours() + 2, minute: (now.getMinutes() > 45 ? now.getMinutes() : now.getMinutes() + 15) },
-        priority: 'interesting'
+        priority: 'interesting',
+        isCompleted: false
       },
       {
         id: '6',
         title: 'Metting with Mark Tempore alias sunt vitae sequi tempora voluptas ipsum inventore.',
         date: date,
         time: { hour: now.getHours() + 3, minute: now.getMinutes() },
-        priority: 'chill'
+        priority: 'chill',
+        isCompleted: false
       }
     ])
 

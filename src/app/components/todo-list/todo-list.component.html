@@ -27,23 +27,36 @@
 </div>
 
 <ng-template #table let-todos="todos">
-  <table>
-    <tr *ngFor="let todo of todos">
-      <td>
-        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-      </td>
-      <td class="title pe-1 text-wrap">
-        <span class="todo-list-item text-wrap">{{todo.title}} at <span class="fw-bold text-wrap">{{todo.time | time}}</span></span>
-      </td>
-      <td>
-        <span class="badge rounded-pill d-flex justify-content-center text-capitalize" [ngClass]="getBadgeClass(todo.priority)">{{todo.priority}}</span>
-      </td>
-      <td>
-        <div class="d-flex">
-          <span><img class="btn" src="../../assets/svg/icon-edit.svg" alt="edit" (click)="edit(todo)"></span>
-          <span><img class="btn" src="../../assets/svg/icon-delete.svg" alt="delete" (click)="delete(todo)"></span>
-        </div>
-      </td>
-    </tr>
+  <table>    
+      <ng-container *ngFor="let todo of todos">
+        <ng-container *ngIf="!todo.isCompleted">
+          <ng-container [ngTemplateOutlet]="tr"  [ngTemplateOutletContext]="{todo}"></ng-container>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngFor="let todo of todos">
+        <ng-container *ngIf="todo.isCompleted">
+          <ng-container [ngTemplateOutlet]="tr"  [ngTemplateOutletContext]="{todo}"></ng-container>
+        </ng-container>
+      </ng-container>
   </table>
+</ng-template>
+
+<ng-template #tr let-todo="todo">
+  <tr>
+    <td>
+      <input class="form-check-input" type="checkbox" id="flexCheckDefault" [(ngModel)]="todo.isCompleted" (click)="check(todo)"/>
+    </td>
+    <td class="title pe-1 text-wrap">
+      <span class="todo-list-item text-wrap" [class]="todo.isCompleted? 'text-decoration-line-through':null">{{todo.title}} at <span class="fw-bold text-wrap">{{todo.time | time}}</span></span>
+    </td>
+    <td>
+      <span class="badge rounded-pill d-flex justify-content-center text-capitalize" [ngClass]="getBadgeClass(todo.priority)">{{todo.priority}}</span>
+    </td>
+    <td>
+      <div class="d-flex">
+        <span><img class="btn" src="../../assets/svg/icon-edit.svg" alt="edit" (click)="edit(todo)"></span>
+        <span><img class="btn" src="../../assets/svg/icon-delete.svg" alt="delete" (click)="delete(todo)"></span>
+      </div>
+    </td>
+  </tr>
 </ng-template>

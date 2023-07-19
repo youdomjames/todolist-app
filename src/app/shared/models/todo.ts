@@ -8,6 +8,7 @@ export class Todo{
   priority?: string;
   attendance?: Array<Person>;
   isSentToCalendar?: boolean;
+  isCompleted?: boolean;
 }
 
 export interface Time {
@@ -22,6 +23,7 @@ export interface Date {
 }
 
 export interface Person {
+  id: string;
   firstName: string;
   lastName: string;
 }

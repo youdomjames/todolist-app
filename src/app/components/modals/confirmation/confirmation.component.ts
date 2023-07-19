@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ModalComponent } from 'src/app/shared/components/base-modal/modal.component';
-import { ModalContent } from '../../../../app/shared/models/modal-conent';
+import { ModalContent } from '../../../shared/models/modal-content';
 
 @Component({
   selector: 'app-confirmation',

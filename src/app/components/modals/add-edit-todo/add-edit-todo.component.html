@@ -49,23 +49,32 @@
           <div class="col-auto col-7">
             <select class="form-select form-select-lg w-100" id="priority-select" aria-label="Default select example" formControlName="priority">
               <option  class="text-success">Chill</option>
-              <option value="1" class="text-danger">Important</option>
-              <option value="2" class="text-primary">Relax</option>
-              <option value="3" class="text-warning">Interesting</option>
+              <option value="important" class="text-danger">Important</option>
+              <option value="relax" class="text-primary">Relax</option>
+              <option value="interesting" class="text-warning">Interesting</option>
             </select>
           </div>
         </div>
       </div>
 
-      <div clas >
-
+      <div class="ms-5 pt-2">
+        <div class="ms-4 me-4" >
+          <span class="badge text-bg-info me-2 mt-2 fs-6 font-monospace" *ngFor="let attendant of attendance">
+            <i class="bi bi-person-fill"></i> <span class="ms-1 me-2">{{attendant.firstName}} {{attendant.lastName}}</span> 
+            <i class="bi bi-x-octagon text-danger me-1" (click)="deleteAttendant(attendant.id)"></i>
+          </span>
+        </div>
       </div>
 
-      <div class="ms-5">
-        <button class="btn btn-outline-secondary m-3" [disabled]="test" (click)="test = true">Add<span *ngIf="test == true">ed</span> to Calendar <i *ngIf="test == true" class="bi bi-check-circle-fill text-success"></i></button>
+      <div class="ms-5 d-flex align-items-center justify-content-between">
+        <!-- TODO: disabled not working -->
+        <button class="btn btn-outline-secondary m-3" [disabled]="todo!.isSentToCalendar? todo!.isSentToCalendar:false" (click)="todo!.isSentToCalendar = !todo!.isSentToCalendar" formControlName="isSentToCalendar">
+          Add<span *ngIf="todo?.isSentToCalendar">ed</span> to Calendar <i *ngIf="todo?.isSentToCalendar" class="bi bi-check-circle-fill text-success"></i>
+        </button>
+        <ng-container *ngIf="todo?.isCompleted == true">
+          <img src="../../../../assets/img/completed.png" class="completed" alt="completed">
+        </ng-container>
       </div>
-
-
     </form>
   </div>
   <button type="submit" class="btn btn-primary" positive-action (click)="submit()">Submit</button>

@@ -46,7 +46,7 @@ import { TimePipe } from '../shared/pipe/time.pipe';
         SharedModule
     ],
     providers: [
-        DatePipe
+        TimePipe
     ]
 })
 export class LayoutModule { }
