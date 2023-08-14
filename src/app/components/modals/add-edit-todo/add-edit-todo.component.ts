@@ -45,7 +45,7 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
     console.log(this.todoForm);
   }
 
-  deleteAttendant(id: string){
+  deleteAttendant(id: number){
     
     let foundAttendant = this.attendance?.find((attendant)=>attendant.id === id);
     

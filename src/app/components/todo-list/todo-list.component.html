@@ -1,19 +1,19 @@
 <div class="vstack list">
-  <ng-container *ngIf="todos.get('today')?.length">
+  <ng-container *ngIf="todos.get('today')">
     <span class="fw-light day">Today</span>
-  <ng-container [ngTemplateOutlet]="table" [ngTemplateOutletContext]="{todos: todos.get('today')}"></ng-container>
+  <ng-container [ngTemplateOutlet]="table" [ngTemplateOutletContext]="{todos: todos.get('today') | async}"></ng-container>
   </ng-container>
-  <ng-container *ngIf="todos.get('tomorrow')?.length">
+  <ng-container *ngIf="todos.get('tomorrow')">
     <span class="fw-light day">Tomorrow</span>
-    <ng-container [ngTemplateOutlet]="table" [ngTemplateOutletContext]="{todos: todos.get('tomorrow')}"></ng-container>
+    <ng-container [ngTemplateOutlet]="table" [ngTemplateOutletContext]="{todos: todos.get('tomorrow') | async}"></ng-container>
   </ng-container>
 
 
   <ng-container *ngIf="loadMore">
     <ng-container *ngFor="let key of todos.keys()">
-      <ng-container *ngIf="key != 'today' && key != 'tomorrow' && todos.get(key)?.length">
+      <ng-container *ngIf="key != 'today' && key != 'tomorrow' && todos.get(key)">
         <span class="fw-light day">{{key}}</span>
-        <ng-container [ngTemplateOutlet]="table" [ngTemplateOutletContext]="{todos: todos.get(key)}"></ng-container>
+        <ng-container [ngTemplateOutlet]="table" [ngTemplateOutletContext]="{todos: todos.get(key) | async}"></ng-container>
       </ng-container>
     </ng-container>
   </ng-container>
@@ -42,7 +42,7 @@
 </ng-template>
 
 <ng-template #tr let-todo="todo">
-  <tr>
+  <tr @fadeInOut>
     <td>
       <input class="form-check-input" type="checkbox" id="flexCheckDefault" [(ngModel)]="todo.isCompleted" (click)="check(todo)"/>
     </td>

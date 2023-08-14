@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalComponent } from './components/base-modal/modal.component';
 import { TimePipe } from './pipe/time.pipe';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 
@@ -10,7 +11,8 @@ import { TimePipe } from './pipe/time.pipe';
     ModalComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    BrowserAnimationsModule
   ],
   exports: [
     ModalComponent

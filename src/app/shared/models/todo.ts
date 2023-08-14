@@ -1,29 +1,29 @@
 import { NgbTimeStruct } from "@ng-bootstrap/ng-bootstrap";
 
 export class Todo{
-  id?: string;
+  id?: number;
   title?: string;
-  date?: Date;
-  time?: Time;
+  date?: TodoDate;
+  time?: TodoTime;
   priority?: string;
   attendance?: Array<Person>;
   isSentToCalendar?: boolean;
   isCompleted?: boolean;
 }
 
-export interface Time {
+export interface TodoTime {
   hour: number;
   minute: number;
 }
 
-export interface Date {
+export interface TodoDate {
   year: number;
   month: number;
   day: number;
 }
 
 export interface Person {
-  id: string;
+  id: number;
   firstName: string;
   lastName: string;
 }
