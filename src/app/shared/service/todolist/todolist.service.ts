@@ -14,7 +14,7 @@ export class TodolistService {
   protected now = new Date(Date.now());
   protected todoDates: TodoDate[] = [];
 
-  constructor(private datePipe: DatePipe) { 
+  constructor(private datePipe: DatePipe) {
     this.$todoList.pipe(
       map((todoList) => todoList.map((todo) => todo.date)),
       tap((dates) => this.todoDates = dates as TodoDate[])
@@ -23,11 +23,12 @@ export class TodolistService {
 
   getTodaysTasks(): Observable<Todo[]> {
     console.log(this.now.getDate(), this.now);
-    
+
     return this.$todoList.pipe(
       // tap(console.log),
-      map((todoList) => todoList.filter((todo: Todo) => todo.date?.day == this.now.getDate())
-                                .sort(((todoA: Todo, todoB: Todo) => (todoA.time!.hour - todoB.time!.hour) && (todoA.time!.minute - todoB.time!.minute)))
+      map((todoList) => todoList.filter((todo: Todo) => (todo.date?.day == this.now.getDay() && todo.date?.month == this.now.getMonth() && todo.date?.year == this.now.getFullYear()))
+                                .sort(((todoA: Todo, todoB: Todo) => todoA.time!.hour > todoB.time!.hour ? 1 : todoA.time!.hour < todoB.time!.hour ? -1 : 0))
+                                // .sort(((todoA: Todo, todoB: Todo) => todoA.time!.minute > todoB.time!.minute ? 1 : todoA.time!.minute < todoB.time!.minute ? -1 : 0))
       ),
       tap(console.log)
     );
