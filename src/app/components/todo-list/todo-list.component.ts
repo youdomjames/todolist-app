@@ -27,10 +27,10 @@ import { TodolistService } from 'src/app/shared/service/todolist/todolist.servic
 })
 export class TodoListComponent implements OnInit {
   date = new Date().getDate();
-  loadCount = 1;
+  loadCount = 0;
   loadMore: boolean = false;
   todos: Map<string, Observable<Todo[]>> = new Map<string, Observable<Todo[]>>();
-  $restOfTasks: Observable<{day: string, todoList: Todo[]}> = new Observable();
+  $restOfTasks: Observable<Array<{day: string, todoList: Todo[]}>> = new Observable();
 
   constructor(private modalService: ModalService, private timePipe: TimePipe, private toastService: ToastService, private todoListService: TodolistService) {
   }
@@ -114,18 +114,28 @@ export class TodoListComponent implements OnInit {
     return this.todoListService.getTomorrowsTasks();
   }
 
-  // get $restOfTasks(): Observable<{day: string, todoList: Todo[]}> {
-  //   return this.todoListService.getTheRestOfTasks().pipe(take(this.loadCount), tap(console.log));
+  // get $restOfTasks(): Observable<Array<{day: string, todoList: Todo[]}>> {
+  //   return this.todoListService.getTheRestOfTasks().pipe(
+  //     mergeMap(data => data),
+  //     distinct(),
+  //     take(this.loadCount),
+  //     toArray()
+  //   );
   // }
 
   getMoreTasks() {
     this.loadCount = this.loadCount + 1;
     console.log(this.loadCount);
     
-    this.$restOfTasks = this.todoListService.getTheRestOfTasks(this.loadCount);
-    const test = this.todoListService.getTheRestOfTasks(this.loadCount)
+    this.$restOfTasks = this.todoListService.getTheRestOfTasks().pipe(
+      mergeMap(data => data),
+      distinct(),
+      take(this.loadCount),
+      toArray()
+    );
+    // const test = this.todoListService.getTheRestOfTasks(this.loadCount)
 
-    test.pipe(toArray(), tap(console.log)).subscribe()
+    // test.pipe(toArray(), tap(console.log)).subscribe()
   }
 
   setValues(): void {

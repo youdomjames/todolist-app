@@ -63,16 +63,22 @@ export class TodolistService {
     )
   }
 
-  getTheRestOfTasks(count: number): Observable<{day: string, todoList: Todo[]}> {
+  getTheRestOfTasks(): Observable<Array<{day: string, todoList: Todo[]}>> {
      return this.$todoList.pipe(
       filter((data) => data.day != 'today' && data.day != 'tomorrow'),
-      take(count),
+      // take(count),
+      // tap(x => console.log(new Date(Date.parse(x.day)))),
       toArray(),
-      map(data => data.sort((a, b) => 
-      Date.parse(a.day) > Date.parse(b.day) ? 1 : Date.parse(a.day) < Date.parse(b.day) ? -1 : 0
+      map(data => [...data].sort((a, b) => {
+        const dateA = new Date(a.todoList[0].date!.year, a.todoList[0].date!.month-1, a.todoList[0].date?.day)
+        const dateB = new Date(b.todoList[0].date!.year, b.todoList[0].date!.month-1, b.todoList[0].date?.day)
+
+        return dateA > dateB ? 1 : dateA < dateB ? -1 : 0
+      }
+      
       )),
-      mergeMap(data => data),
-      distinct(),
+      // mergeMap(data => data),
+      // distinct(),
       // tap(console.log)
     )
   }
