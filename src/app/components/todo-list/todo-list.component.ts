@@ -25,18 +25,13 @@ import { TodolistService } from 'src/app/shared/service/todolist/todolist.servic
     ])
   ]
 })
-export class TodoListComponent implements OnInit {
+export class TodoListComponent {
   date = new Date().getDate();
   loadCount = 0;
-  loadMore: boolean = false;
+  loadMore: boolean = true;
   todos: Map<string, Observable<Todo[]>> = new Map<string, Observable<Todo[]>>();
-  $restOfTasks: Observable<Array<{day: string, todoList: Todo[]}>> = new Observable();
 
   constructor(private modalService: ModalService, private timePipe: TimePipe, private toastService: ToastService, private todoListService: TodolistService) {
-  }
-
-  ngOnInit(): void {
-    this.setValues();
   }
 
   edit(todo: Todo) {
@@ -57,13 +52,7 @@ export class TodoListComponent implements OnInit {
     modalRef.componentInstance.positiveAction.pipe(
       take(1),
       tap(() => {
-        for (let todos of this.todos.values()) {
-          // const todoIndex = todos.indexOf(todo, 0)
-          // if (todoIndex > -1) {
-          //   todos.splice(todoIndex, 1)
-            this.toastService.showSuccess('Task successfully deleted')
-          // }
-        }
+          this.toastService.showSuccess('Task successfully deleted')
       })).subscribe()
 
     modalRef.componentInstance.negativeAction.pipe(
@@ -95,15 +84,13 @@ export class TodoListComponent implements OnInit {
         badgeClass = 'bg-warning';
         break;
       }
-
     }
-
     return badgeClass;
   }
 
   check(todo: Todo){
     console.log(todo);
-    
+
   }
 
   get $todaysTasks(): Observable<Todo[]> {
@@ -114,75 +101,25 @@ export class TodoListComponent implements OnInit {
     return this.todoListService.getTomorrowsTasks();
   }
 
-  // get $restOfTasks(): Observable<Array<{day: string, todoList: Todo[]}>> {
-  //   return this.todoListService.getTheRestOfTasks().pipe(
-  //     mergeMap(data => data),
-  //     distinct(),
-  //     take(this.loadCount),
-  //     toArray()
-  //   );
-  // }
-
-  getMoreTasks() {
-    this.loadCount = this.loadCount + 1;
-    console.log(this.loadCount);
-    
-    this.$restOfTasks = this.todoListService.getTheRestOfTasks().pipe(
+  get $restOfTasks(): Observable<Array<{day: string, todoList: Todo[]}>> {
+    return this.todoListService.getTheRestOfTasks().pipe(
       mergeMap(data => data),
       distinct(),
       take(this.loadCount),
       toArray()
     );
-    // const test = this.todoListService.getTheRestOfTasks(this.loadCount)
-
-    // test.pipe(toArray(), tap(console.log)).subscribe()
   }
 
-  setValues(): void {
-    // const now = new Date(this.date);
-    // const date = {year: now.getFullYear(), month: now.getMonth(), day: now.getDay()}
-    // console.log(date);
-    
-    // // const ngbTime = {hour: now.getHours(), minute: now.getMinutes()} as NgbTimeStruct
-    // this.todos.set('today', this.todoListService.getTodaysTasks())
-
-    // this.todos.set('tomorrow', this.todoListService.getTomorrowsTasks())
-    
-    // this.todoListService.getTheRestOfTasks().pipe(
-    //   tap((map) => {
-    //     for(let key of map.keys()){
-    //       this.todos.set(key, of(map.get(key) as Todo[]))
-    //     }
-    //   })
-    // )
-    // this.todos.set('13th January', [
-    //   {
-    //     id: '9',
-    //     title: 'Metting with Mark ex perferendis sapiente tenetur nisi reprehenderit excepturi',
-    //     time: { hour: now.getHours(), minute: now.getMinutes() },
-    //     priority: 'chill'
-    //   },
-    //   {
-    //     id: '10',
-    //     title: 'Metting with Mark aliquid deserunt sint dolorem eum reiciendis.',
-    //     time: { hour: now.getHours() + 1, minute: now.getMinutes() },
-    //     priority: 'important'
-    //   }
-    // ])
-    // this.todos.set('15th January', [
-    //   {
-    //     id: '11',
-    //     title: 'Metting with Mark ex perferendis sapiente tenetur nisi reprehenderit excepturi',
-    //     time: { hour: now.getHours() + 3, minute:  (now.getMinutes() > 45 ? now.getMinutes() : now.getMinutes() + 10) },
-    //     priority: 'relax'
-    //   },
-    //   {
-    //     id: '12',
-    //     title: 'Metting with Mark aliquid deserunt sint dolorem eum reiciendis.',
-    //     time: { hour: now.getHours() + 5, minute: now.getMinutes() },
-    //     priority: 'interesting'
-    //   }
-    // ])
+  getMoreTasks(isLoadMoreScope: boolean ) {
+    if(isLoadMoreScope){
+      this.loadCount = this.loadCount + 5;
+    }else{
+      this.loadCount = 0;
+      this.loadMore = true;
+    }
+    if(this.loadCount >= this.todoListService.dataLength){
+      this.loadMore = false;
+    }
   }
 }
 

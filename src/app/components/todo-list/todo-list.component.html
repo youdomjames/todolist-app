@@ -19,9 +19,9 @@
   </ng-container>
 
   <div class="d-flex justify-content-center align-items-center mt-4">
-    <div *ngIf="!loadMore" class="shadow-lg p-2 bg-body-tertiary rounded btn w-75" (click)="getMoreTasks()">Load More
+    <div *ngIf="loadMore" class="shadow-lg p-2 bg-body-tertiary rounded btn w-75" (click)="getMoreTasks(true)">Load More
     </div>
-    <div *ngIf="loadMore" class="shadow-lg p-2 bg-body-tertiary rounded btn w-75" (click)="loadMore = false">Reduce
+    <div *ngIf="!loadMore" class="shadow-lg p-2 bg-body-tertiary rounded btn w-75" (click)="getMoreTasks(false)">Reduce
     </div>
   </div>
 </div>

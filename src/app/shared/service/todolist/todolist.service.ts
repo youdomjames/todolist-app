@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import DATA from '../../../../assets/temp-data/todolist.json'
 import { Todo, TodoDate } from '../../models/todo';
-import { BehaviorSubject, Observable, ReplaySubject, distinct, filter, map, mergeMap, take, tap, toArray } from 'rxjs';
-import { DatePipe } from '@angular/common';
+import { Observable, ReplaySubject, filter, map, shareReplay, take, tap, toArray } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,35 +10,62 @@ export class TodolistService {
 
   protected todoListSubject = new ReplaySubject<{day: string, todoList: Todo[]}>();
   $todoList = this.todoListSubject.asObservable();
+  dataLength: number = 0;
   protected now = new Date(Date.now());
   protected todoDates: TodoDate[] = [];
 
-  constructor(private datePipe: DatePipe) {
+  constructor() {
     this.setTodayTasks();
     this.setTomorrowTasks();
     this.setAllOtherTasks();
-    // this.getTodaysTasks().subscribe(console.log)
-    // this.getTomorrowsTasks().subscribe(console.log)
-    // this.getTheRestOfTasks(5).subscribe(console.log)
-    // this.now.setFullYear();
-    // this.$todoList.pipe(
-    //   map((todoList) => todoList.map((todo) => todo.date)),
-    //   tap((dates) => this.todoDates = dates as TodoDate[])
-    // );
+    this.setDataLength();
   }
-  setTodayTasks() {
+  getTodaysTasks(): Observable<Todo[]> {
+    return this.$todoList.pipe(
+      filter((data) => data.day === 'today'),
+      map(data => data.todoList),
+    );
+  }
+
+  getTomorrowsTasks(): Observable<Todo[]> {
+    return this.$todoList.pipe(
+      filter((data) => data.day == 'tomorrow'),
+      map(data => data.todoList),
+    )
+  }
+
+  getTheRestOfTasks(): Observable<Array<{day: string, todoList: Todo[]}>> {
+    this.$todoList.pipe(tap((project => length = length + 1))).subscribe();
+     return this.$todoList.pipe(
+      take(this.dataLength),
+      filter((data) => data.day != 'today' && data.day != 'tomorrow'),
+      toArray(),
+      map(data => [...data].sort((a, b) => {
+        const dateA = new Date(a.todoList[0].date!.year, a.todoList[0].date!.month-1, a.todoList[0].date?.day)
+        const dateB = new Date(b.todoList[0].date!.year, b.todoList[0].date!.month-1, b.todoList[0].date?.day)
+        return dateA > dateB ? 1 : dateA < dateB ? -1 : 0
+      }
+      ))
+    )
+  }
+
+  private setDataLength() {
+    return this.$todoList.pipe(tap((project => this.dataLength = this.dataLength + 1))).subscribe();
+  }
+
+  private setTodayTasks() {
     const day = 'today';
     const todoList =  this.filterAndSortTodoList(DATA as Todo[], this.now.getDate(), this.now.getMonth()+1, this.now.getFullYear());
     this.todoListSubject.next({ day, todoList})
   }
 
-  setTomorrowTasks() {
+  private setTomorrowTasks() {
     const day = 'tomorrow';
     const todoList =  this.filterAndSortTodoList(DATA as Todo[], this.now.getDate()+1, this.now.getMonth()+1, this.now.getFullYear());
     this.todoListSubject.next({ day, todoList})
   }
 
-  setAllOtherTasks() {
+  private setAllOtherTasks() {
     DATA.forEach((todo) => {
       if(todo.date && (todo.date.day > this.now.getDate()+1 || todo.date.month > this.now.getMonth()+1 || todo.date.year > this.now.getFullYear())){
         const day = `${todo.date.day}/${todo.date.month}/${todo.date.year}`;
@@ -47,40 +73,6 @@ export class TodolistService {
         this.todoListSubject.next({ day, todoList})
       }
     })
-  }
-
-  getTodaysTasks(): Observable<Todo[]> {
-    return this.$todoList.pipe(
-      filter((data) => data.day === 'today'),
-      map(data => data.todoList)
-    );
-  }
-
-  getTomorrowsTasks(): Observable<Todo[]> {
-    return this.$todoList.pipe(
-      filter((data) => data.day == 'tomorrow'),
-      map(data => data.todoList)
-    )
-  }
-
-  getTheRestOfTasks(): Observable<Array<{day: string, todoList: Todo[]}>> {
-     return this.$todoList.pipe(
-      filter((data) => data.day != 'today' && data.day != 'tomorrow'),
-      // take(count),
-      // tap(x => console.log(new Date(Date.parse(x.day)))),
-      toArray(),
-      map(data => [...data].sort((a, b) => {
-        const dateA = new Date(a.todoList[0].date!.year, a.todoList[0].date!.month-1, a.todoList[0].date?.day)
-        const dateB = new Date(b.todoList[0].date!.year, b.todoList[0].date!.month-1, b.todoList[0].date?.day)
-
-        return dateA > dateB ? 1 : dateA < dateB ? -1 : 0
-      }
-      
-      )),
-      // mergeMap(data => data),
-      // distinct(),
-      // tap(console.log)
-    )
   }
 
   private filterAndSortTodoList(todoList: Todo[], day: number, month: number, year: number): Todo[] {
@@ -95,6 +87,4 @@ export class TodolistService {
         return result;
       }))
   }
-
-
 }
