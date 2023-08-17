@@ -10,7 +10,8 @@
           <label for="title" class="col-form-label fs-5">Title</label>
         </div>
         <div class="col-auto col-10">
-          <input type="text" id="title" class="form-control form-control-lg" aria-labelledby="passwordHelpInline" formControlName="title"/>
+          <input type="text" id="title" class="form-control form-control-lg" aria-labelledby="passwordHelpInline"
+            formControlName="title" />
         </div>
       </div>
 
@@ -19,7 +20,8 @@
           <label for="date" class="col-form-label fs-5">Date</label>
         </div>
         <div class="input-group">
-          <input class="form-control" placeholder="yyyy-mm-dd" name="dp" id="date" ngbDatepicker #d="ngbDatepicker" formControlName="date"/>
+          <input class="form-control" placeholder="yyyy-mm-dd" name="dp" id="date" ngbDatepicker #d="ngbDatepicker"
+            formControlName="date" />
           <button class="btn btn-outline-secondary bi bi-calendar3" (click)="d.toggle()" type="button"></button>
         </div>
         <div class="p-2">
@@ -31,24 +33,26 @@
       </div>
 
       <div class="row ms-5 pt-2">
-        <div class="hstack col">
-          <div>
-            <label for="title" class="col-form-label fs-5 me-2">With</label>
+        <form [formGroup]="attendantForm" class="hstack col">
+          <label for="title" class="col-form-label fs-5 me-2">With</label>
+          <div class="input-group">
+            <input type="text" class="form-control p-2" formControlName="firstName" placeholder="First Name" aria-label="First Name"
+              aria-describedby="exit">
+            <input type="text" class="form-control p-2" formControlName="lastName" placeholder="Last Name" aria-label="Last Name"
+              aria-describedby="exit">
+            <button class="btn btn-outline-secondary bi bi-person-add" type="submit" (click)="addAttendant()">
+            </button>
           </div>
-            <div class="input-group">
-              <input type="text" class="form-control p-2" placeholder="Enter a name" aria-label="Enter a name" aria-describedby="exit">
-              <i class="btn btn-outline-secondary bi bi-person-add" (click)="addAttendant=true">
-              </i>
-            </div>
-        </div>
+        </form>
 
         <div class="row mt-1 col">
           <div class="col-auto col-form-label fs-5">
             <label for="priority-select">Priority</label>
           </div>
           <div class="col-auto col-7">
-            <select class="form-select form-select-lg w-100" id="priority-select" aria-label="Default select example" formControlName="priority">
-              <option  class="text-success">Chill</option>
+            <select class="form-select form-select-lg w-100" id="priority-select" aria-label="Default select example"
+              formControlName="priority">
+              <option class="text-success">Chill</option>
               <option value="important" class="text-danger">Important</option>
               <option value="relax" class="text-primary">Relax</option>
               <option value="interesting" class="text-warning">Interesting</option>
@@ -58,9 +62,10 @@
       </div>
 
       <div class="ms-5 pt-2">
-        <div class="ms-4 me-4" >
+        <div class="ms-4 me-4">
           <span class="badge text-bg-info me-2 mt-2 fs-6 font-monospace" *ngFor="let attendant of attendance">
-            <i class="bi bi-person-fill"></i> <span class="ms-1 me-2">{{attendant.firstName}} {{attendant.lastName}}</span> 
+            <i class="bi bi-person-fill"></i> <span class="ms-1 me-2">{{attendant.firstName}}
+              {{attendant.lastName}}</span>
             <i class="bi bi-x-octagon text-danger me-1" (click)="deleteAttendant(attendant.id)"></i>
           </span>
         </div>
@@ -68,9 +73,9 @@
 
       <div class="ms-5 d-flex align-items-center justify-content-between">
         <!-- TODO: disabled not working -->
-        <button class="btn btn-outline-secondary m-3" [disabled]="todo!.isSentToCalendar? todo!.isSentToCalendar:false" (click)="todo!.isSentToCalendar = !todo!.isSentToCalendar" formControlName="isSentToCalendar">
+        <!-- <button class="btn btn-outline-secondary m-3" [disabled]="todo!.isSentToCalendar? todo!.isSentToCalendar:false" (click)="todo!.isSentToCalendar = !todo!.isSentToCalendar" formControlName="isSentToCalendar">
           Add<span *ngIf="todo?.isSentToCalendar">ed</span> to Calendar <i *ngIf="todo?.isSentToCalendar" class="bi bi-check-circle-fill text-success"></i>
-        </button>
+        </button> -->
         <ng-container *ngIf="todo?.isCompleted == true">
           <img src="../../../../assets/img/completed.png" class="completed" alt="completed">
         </ng-container>

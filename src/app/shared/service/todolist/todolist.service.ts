@@ -35,7 +35,6 @@ export class TodolistService {
   }
 
   getTheRestOfTasks(): Observable<Array<{day: string, todoList: Todo[]}>> {
-    this.$todoList.pipe(tap((project => length = length + 1))).subscribe();
      return this.$todoList.pipe(
       take(this.dataLength),
       filter((data) => data.day != 'today' && data.day != 'tomorrow'),

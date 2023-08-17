@@ -18,8 +18,8 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
 
   @Input() todo: Todo | undefined;
   time: { hour: number; minute: number; } | undefined ;
-  addAttendant: boolean= false;
   test:boolean = false;
+  attendantForm!: FormGroup;
   todoForm!: FormGroup;
   attendance: Array<Person> | undefined;
 
@@ -38,21 +38,29 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
       priority: new FormControl(this.todo?.priority),
       isSentToCalendar: new FormControl(this.todo?.isSentToCalendar)
     })
+    this.attendantForm = new FormGroup({
+      id: new FormControl(Math.random()),
+      firstName: new FormControl(),
+      lastName: new FormControl()
+    })
     console.log(this.todoForm.controls["attendance"].value);
   }
 
   submit(){
-    console.log(this.todoForm);
+    console.log(this.todoForm.value);
+  }
+
+  addAttendant() {
+    console.log(this.attendantForm.value);
+    this.attendantForm.reset()
   }
 
   deleteAttendant(id: number){
-    
     let foundAttendant = this.attendance?.find((attendant)=>attendant.id === id);
-    
 
     const modalContent = {
       title: 'Delete Confirmation',
-      message: 'Do really you want to delete this Attendant?',
+      message: 'Do you really want to delete this Attendant?',
       description: `${foundAttendant?.firstName} ${foundAttendant?.lastName}`,
       positiveAction: 'Yes',
       negativeAction: 'No'
@@ -80,6 +88,5 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
       })
     ).subscribe()
   }
-
 
 }
