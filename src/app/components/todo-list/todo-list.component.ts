@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalService } from 'src/app/shared/components/base-modal/modal.service';
 import { ConfirmationComponent } from '../modals/confirmation/confirmation.component';
-import { Observable, of, take, tap } from 'rxjs';
+import { Observable, distinct, flatMap, mergeMap, of, take, tap, toArray } from 'rxjs';
 import { ModalContent } from 'src/app/shared/models/modal-content';
 import { ToastService } from 'src/app/shared/service/toast.service';
 import {  Todo, TodoTime } from 'src/app/shared/models/todo';
@@ -27,8 +27,10 @@ import { TodolistService } from 'src/app/shared/service/todolist/todolist.servic
 })
 export class TodoListComponent implements OnInit {
   date = new Date().getDate();
+  loadCount = 1;
   loadMore: boolean = false;
   todos: Map<string, Observable<Todo[]>> = new Map<string, Observable<Todo[]>>();
+  $restOfTasks: Observable<{day: string, todoList: Todo[]}> = new Observable();
 
   constructor(private modalService: ModalService, private timePipe: TimePipe, private toastService: ToastService, private todoListService: TodolistService) {
   }
@@ -104,23 +106,45 @@ export class TodoListComponent implements OnInit {
     
   }
 
-  setValues(): void {
-    const now = new Date(this.date);
-    const date = {year: now.getFullYear(), month: now.getMonth(), day: now.getDay()}
-    console.log(date);
-    
-    // const ngbTime = {hour: now.getHours(), minute: now.getMinutes()} as NgbTimeStruct
-    this.todos.set('today', this.todoListService.getTodaysTasks())
+  get $todaysTasks(): Observable<Todo[]> {
+    return this.todoListService.getTodaysTasks();
+  }
 
-    this.todos.set('tomorrow', this.todoListService.getTomorrowsTasks())
+  get $tomorrowsTasks(): Observable<Todo[]> {
+    return this.todoListService.getTomorrowsTasks();
+  }
+
+  // get $restOfTasks(): Observable<{day: string, todoList: Todo[]}> {
+  //   return this.todoListService.getTheRestOfTasks().pipe(take(this.loadCount), tap(console.log));
+  // }
+
+  getMoreTasks() {
+    this.loadCount = this.loadCount + 1;
+    console.log(this.loadCount);
     
-    this.todoListService.getTheRestOfTasks().pipe(
-      tap((map) => {
-        for(let key of map.keys()){
-          this.todos.set(key, of(map.get(key) as Todo[]))
-        }
-      })
-    )
+    this.$restOfTasks = this.todoListService.getTheRestOfTasks(this.loadCount);
+    const test = this.todoListService.getTheRestOfTasks(this.loadCount)
+
+    test.pipe(toArray(), tap(console.log)).subscribe()
+  }
+
+  setValues(): void {
+    // const now = new Date(this.date);
+    // const date = {year: now.getFullYear(), month: now.getMonth(), day: now.getDay()}
+    // console.log(date);
+    
+    // // const ngbTime = {hour: now.getHours(), minute: now.getMinutes()} as NgbTimeStruct
+    // this.todos.set('today', this.todoListService.getTodaysTasks())
+
+    // this.todos.set('tomorrow', this.todoListService.getTomorrowsTasks())
+    
+    // this.todoListService.getTheRestOfTasks().pipe(
+    //   tap((map) => {
+    //     for(let key of map.keys()){
+    //       this.todos.set(key, of(map.get(key) as Todo[]))
+    //     }
+    //   })
+    // )
     // this.todos.set('13th January', [
     //   {
     //     id: '9',
