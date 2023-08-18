@@ -1,13 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { take, tap } from 'rxjs';
+import { filter, take, tap } from 'rxjs';
 import { ModalComponent } from 'src/app/shared/components/base-modal/modal.component';
 import { ModalService } from 'src/app/shared/components/base-modal/modal.service';
 import { ModalContent } from 'src/app/shared/models/modal-content';
 import { Person, Todo } from 'src/app/shared/models/todo';
 import { ConfirmationComponent } from '../confirmation/confirmation.component';
 import { ToastService } from 'src/app/shared/service/toast.service';
+import { TodolistService } from 'src/app/shared/service/todolist/todolist.service';
 
 @Component({
   selector: 'app-add-edit-todo',
@@ -22,7 +23,8 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
   todoForm!: FormGroup;
   attendance: Array<Person> | undefined;
 
-  constructor(override activeModal: NgbActiveModal, private modalService: ModalService, private toastService: ToastService){
+  constructor(override activeModal: NgbActiveModal, private modalService: ModalService, private toastService: ToastService,
+    private todoListService: TodolistService){
     super(activeModal)
   }
 
@@ -30,12 +32,14 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
     this.time = this.todo?.time;
     this.attendance = this.todo?.attendance;
     this.todoForm = new FormGroup({
+      id: new FormControl(this.todo?.id),
       title: new FormControl(this.todo?.title),
       date: new FormControl(this.todo?.date),
       time: new FormControl(this.time),
       attendance: new FormControl(this.todo?.attendance),
       priority: new FormControl(this.todo?.priority),
-      isSentToCalendar: new FormControl(this.todo?.isSentToCalendar)
+      isSentToCalendar: new FormControl(this.todo?.isSentToCalendar),
+      isCompleted: new FormControl(this.todo?.isCompleted)
     })
     this.attendantForm = new FormGroup({
       id: new FormControl(),
@@ -45,7 +49,12 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
   }
 
   submit(){
-    console.log(this.todoForm.value);
+    // this.todoForm.valueChanges.pipe(filter((test) => test.dirty)).subscribe(console.log)
+    // this.todoForm.statusChanges.subscribe(console.log)
+    const controls = this.todoForm.controls;
+    console.log(this.todoForm);
+
+    this.todoListService.addTask(this.todoForm.value)
   }
 
   addAttendant() {
@@ -57,14 +66,14 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
     } else
       attendance = [this.attendantForm.value]
     this.todoForm.controls["attendance"].setValue(attendance)
-    this.attendance = attendance;    
+    this.attendance = attendance;
     this.attendantForm.reset()
   }
 
   deleteAttendant(id: number){
     let foundAttendant = this.attendance?.find((attendant)=>attendant.id === id);
     console.log(foundAttendant);
-    
+
     const modalContent = {
       title: 'Delete Confirmation',
       message: 'Do you really want to delete this Attendant?',

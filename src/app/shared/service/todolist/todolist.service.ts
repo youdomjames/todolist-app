@@ -20,6 +20,35 @@ export class TodolistService {
     this.setAllOtherTasks();
     this.setDataLength();
   }
+
+  addTask(todo: Todo) {
+    console.log(todo);
+
+    this.$todoList.pipe(tap(data =>{
+      const todoListIncludesId = data.todoList.map((data) => data.id).filter((id) => id === todo.id);
+      console.log(todoListIncludesId);
+
+      if(todoListIncludesId){
+        const index = data.todoList.find((data) => data.id === todo.id) as Todo;
+        if(index){
+          Object.assign(index, todo)
+        }
+        // data.todoList.splice(index, 1)
+        // data.todoList.push(todo)
+        // console.log('data', data);
+      }else {
+        if(todo.date == undefined){
+          return;
+        }
+        const day = `${todo.date.day}/${todo.date.month}/${todo.date.year}`;
+        const todoList = [todo];
+        this.todoListSubject.next({day, todoList});
+        // console.log('todoList', {data, todoList});
+
+      }
+    })).subscribe()
+  }
+
   getTodaysTasks(): Observable<Todo[]> {
     return this.$todoList.pipe(
       filter((data) => data.day === 'today'),
