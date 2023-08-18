@@ -18,7 +18,6 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
 
   @Input() todo: Todo | undefined;
   time: { hour: number; minute: number; } | undefined ;
-  test:boolean = false;
   attendantForm!: FormGroup;
   todoForm!: FormGroup;
   attendance: Array<Person> | undefined;
@@ -39,11 +38,10 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
       isSentToCalendar: new FormControl(this.todo?.isSentToCalendar)
     })
     this.attendantForm = new FormGroup({
-      id: new FormControl(Math.random()),
+      id: new FormControl(),
       firstName: new FormControl(),
       lastName: new FormControl()
     })
-    console.log(this.todoForm.controls["attendance"].value);
   }
 
   submit(){
@@ -51,13 +49,22 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
   }
 
   addAttendant() {
-    console.log(this.attendantForm.value);
+    this.attendantForm.controls['id'].setValue(Math.floor(Math.random()*5000));
+    const attendanceControl = this.todoForm.controls["attendance"];
+    let attendance;
+    if(attendanceControl.value) {
+      attendance = [...attendanceControl.value, this.attendantForm.value]
+    } else
+      attendance = [this.attendantForm.value]
+    this.todoForm.controls["attendance"].setValue(attendance)
+    this.attendance = attendance;    
     this.attendantForm.reset()
   }
 
   deleteAttendant(id: number){
     let foundAttendant = this.attendance?.find((attendant)=>attendant.id === id);
-
+    console.log(foundAttendant);
+    
     const modalContent = {
       title: 'Delete Confirmation',
       message: 'Do you really want to delete this Attendant?',
@@ -72,7 +79,7 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
       take(1),
       tap(() => {
         const index = this.attendance?.findIndex((attendant)=> attendant.id == id);
-        if(index && index > 0){
+        if(index != undefined && index >= 0){
           this.attendance?.splice(index, 1);
           this.todoForm.controls["attendance"].setValue(this.attendance);
           this.toastService.showSuccess(`Attendant ${foundAttendant?.firstName} ${foundAttendant?.lastName} successfully deleted`)

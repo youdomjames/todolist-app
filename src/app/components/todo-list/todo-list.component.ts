@@ -26,7 +26,6 @@ import { TodolistService } from 'src/app/shared/service/todolist/todolist.servic
   ]
 })
 export class TodoListComponent {
-  date = new Date().getDate();
   loadCount = 0;
   loadMore: boolean = true;
   todos: Map<string, Observable<Todo[]>> = new Map<string, Observable<Todo[]>>();
