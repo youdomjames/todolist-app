@@ -22,20 +22,15 @@ export class TodolistService {
   }
 
   addTask(todo: Todo) {
-    console.log(todo);
-
     this.$todoList.pipe(tap(data =>{
       const todoListIncludesId = data.todoList.map((data) => data.id).filter((id) => id === todo.id);
-      console.log(todoListIncludesId);
 
       if(todoListIncludesId){
         const index = data.todoList.find((data) => data.id === todo.id) as Todo;
         if(index){
           Object.assign(index, todo)
+          data.todoList = this.sortTodoList(data.todoList)
         }
-        // data.todoList.splice(index, 1)
-        // data.todoList.push(todo)
-        // console.log('data', data);
       }else {
         if(todo.date == undefined){
           return;
@@ -43,8 +38,6 @@ export class TodolistService {
         const day = `${todo.date.day}/${todo.date.month}/${todo.date.year}`;
         const todoList = [todo];
         this.todoListSubject.next({day, todoList});
-        // console.log('todoList', {data, todoList});
-
       }
     })).subscribe()
   }
@@ -83,13 +76,13 @@ export class TodolistService {
 
   private setTodayTasks() {
     const day = 'today';
-    const todoList =  this.filterAndSortTodoList(DATA as Todo[], this.now.getDate(), this.now.getMonth()+1, this.now.getFullYear());
+    const todoList =  this.sortTodoList(this.filterAndSortTodoList(DATA as Todo[], this.now.getDate(), this.now.getMonth()+1, this.now.getFullYear()));
     this.todoListSubject.next({ day, todoList})
   }
 
   private setTomorrowTasks() {
     const day = 'tomorrow';
-    const todoList =  this.filterAndSortTodoList(DATA as Todo[], this.now.getDate()+1, this.now.getMonth()+1, this.now.getFullYear());
+    const todoList =  this.sortTodoList(this.filterAndSortTodoList(DATA as Todo[], this.now.getDate()+1, this.now.getMonth()+1, this.now.getFullYear()));
     this.todoListSubject.next({ day, todoList})
   }
 
@@ -97,7 +90,7 @@ export class TodolistService {
     DATA.forEach((todo) => {
       if(todo.date && (todo.date.day > this.now.getDate()+1 || todo.date.month > this.now.getMonth()+1 || todo.date.year > this.now.getFullYear())){
         const day = `${todo.date.day}/${todo.date.month}/${todo.date.year}`;
-        const todoList = this.filterAndSortTodoList(DATA as Todo[], todo.date.day, todo.date.month, todo.date.year)
+        const todoList = this.sortTodoList(this.filterAndSortTodoList(DATA as Todo[], todo.date.day, todo.date.month, todo.date.year))
         this.todoListSubject.next({ day, todoList})
       }
     })
@@ -105,7 +98,10 @@ export class TodolistService {
 
   private filterAndSortTodoList(todoList: Todo[], day: number, month: number, year: number): Todo[] {
     return todoList.filter((todo: Todo) => todo.date?.day == day && todo.date?.month == month && todo.date.year == year)
-      .sort(((todoA: Todo, todoB: Todo) => todoA.time!.hour > todoB.time!.hour ? 1 : todoA.time!.hour < todoB.time!.hour ? -1 : 0))
+  }
+
+  public sortTodoList(todoList: Todo[]): Todo[] {
+    return todoList.sort(((todoA: Todo, todoB: Todo) => todoA.time!.hour > todoB.time!.hour ? 1 : todoA.time!.hour < todoB.time!.hour ? -1 : 0))
       .sort(((todoA: Todo, todoB: Todo) => {
         let result = 0;
         if (todoA.time!.hour == todoB.time!.hour && todoA.time!.minute > todoB.time!.minute)
