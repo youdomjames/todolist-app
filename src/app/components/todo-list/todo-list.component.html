@@ -11,10 +11,10 @@
 
 
   <ng-container *ngIf="loadCount > 0">
-    <ng-container *ngFor="let data of ($restOfTasks | async)">
-      <span class="fw-light day">{{data.day}}</span>
+    <ng-container *ngFor="let data of (($restOfTasks | async)|keyvalue)">
+      <span class="fw-light day">{{data.key}}</span>
       <ng-container [ngTemplateOutlet]="table"
-        [ngTemplateOutletContext]="{todos: data.todoList}"></ng-container>
+        [ngTemplateOutletContext]="{todos: data.value}"></ng-container>
     </ng-container>
   </ng-container>
 

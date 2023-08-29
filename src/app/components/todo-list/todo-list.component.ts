@@ -101,12 +101,7 @@ export class TodoListComponent {
   }
 
   get $restOfTasks(): Observable<Array<{day: string, todoList: Todo[]}>> {
-    return this.todoListService.getTheRestOfTasks().pipe(
-      mergeMap(data => data),
-      distinct(),
-      take(this.loadCount),
-      toArray()
-    );
+    return this.todoListService.getTheRestOfTasks();
   }
 
   getMoreTasks(isLoadMoreScope: boolean ) {
@@ -116,9 +111,9 @@ export class TodoListComponent {
       this.loadCount = 0;
       this.loadMore = true;
     }
-    if(this.loadCount >= this.todoListService.dataLength){
-      this.loadMore = false;
-    }
+    // if(this.loadCount >= this.todoListService.dataLength){
+    //   this.loadMore = false;
+    // }
   }
 }
 

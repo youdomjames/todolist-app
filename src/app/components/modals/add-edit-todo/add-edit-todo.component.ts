@@ -54,7 +54,7 @@ export class AddEditTodoComponent extends ModalComponent implements OnInit{
     const controls = this.todoForm.controls;
     console.log(this.todoForm);
 
-    this.todoListService.addTask(this.todoForm.value)
+    // this.todoListService.addTask(this.todoForm.value)
   }
 
   addAttendant() {
